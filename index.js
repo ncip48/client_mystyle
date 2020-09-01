@@ -8,21 +8,21 @@ const crypto = require("crypto");
 const cors = require("cors");
 const port = process.env.PORT || 9000;
 
-const conn = mysql.createConnection({
+const conn = mysql.createPool({
   host: "83.136.216.67",
   user: "u6083019_ncip",
   password: "mbahcip123",
   database: "u6083019_ci_market_place",
 });
 
-/* const conn = mysql.createConnection({
+/*const conn = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "",
   database: "ci_market_client1",
-}); */
+});*/
 
-conn.connect((err) => {
+conn.getConnection((err) => {
   if (err) throw err;
   console.log("Mysql Connected...");
 });
@@ -49,7 +49,7 @@ app.post("/login", (req, res) => {
     "' AND password='" +
     hashpw(password) +
     "'";
-  let query = conn.query(sql, (err, results) => {
+  conn.query(sql, (err, results) => {
     res.json({ result: "1", data: results });
   });
 });
@@ -60,7 +60,7 @@ app.get("/getdetail/:username", (req, res) => {
     "SELECT COUNT(*) AS jumlah_followers FROM tb_followers a JOIN tb_user b ON a.id_konsumen=b.id_konsumen WHERE b.username='" +
     username +
     "'";
-  let query = conn.query(q1, (err, followers) => {
+  conn.query(q1, (err, followers) => {
     let q2 =
       "SELECT COUNT(*) AS jumlah_following FROM tb_followers a JOIN tb_user b ON  a.id_following=b.id_konsumen WHERE b.username='" +
       username +
@@ -103,11 +103,11 @@ app.get("/homepage/:username", (req, res) => {
     "SELECT a.id_post, a.img, a.judul_post, a.likes , b.* FROM tb_post a JOIN tb_user b ON a.id_konsumen=b.id_konsumen JOIN tb_followers c ON b.id_konsumen=c.id_konsumen JOIN tb_user d ON c.id_following=d.id_konsumen WHERE d.username='" +
     username +
     "'";
-  let query = conn.query(sql, (err, results) => {
+  conn.query(sql, (err, results) => {
     res.json({ result: "1", data: results });
   });
 });
 
-app.listen(port, function() {
-  console.log('Our app is running on http://localhost:' + port);
+app.listen(port, function () {
+  console.log("Our app is running on http://localhost:" + port);
 });
