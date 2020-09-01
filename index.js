@@ -6,6 +6,7 @@ const mysql = require("mysql");
 const app = express();
 const crypto = require("crypto");
 var cors = require("cors");
+var port = process.env.PORT || 9000;
 
 const conn = mysql.createConnection({
   host: "83.136.216.67",
@@ -108,121 +109,12 @@ app.get("/homepage/:username", (req, res) => {
     "'";
   let query = conn.query(sql, (err, results) => {
     //res.redirect("/");
-    const hasil = hashresult(results.toString());
+    //const hasil = hashresult(results.toString());
     res.json({ result: "1", data: results });
   });
 });
 
-//route for homepage
-app.get("/", (req, res) => {
-  let sql = "SELECT * FROM tb_mhs";
-  conn.query(sql, (err, results) => {
-    if (err) throw err;
-    res.render("mhs", {
-      mahasiswa: results,
-    });
-  });
-});
-
-app.get("/api/mahasiswa", (req, res) => {
-  let sql = "SELECT * FROM tb_mhs";
-  conn.query(sql, (err, results) => {
-    if (err) throw err;
-    res.json({
-      result: "1",
-      response: 200,
-      data: results,
-    });
-  });
-});
-
-app.get("/api/mahasiswa/:id", (req, res) => {
-  let sql = "SELECT * FROM tb_mhs WHERE id_mhs=" + req.params.id;
-  conn.query(sql, (err, results) => {
-    if (err) throw err;
-    if (results.length === 0) {
-      res.json({
-        result: "0",
-        response: 404,
-        data: "maaf data tidak ditemukan",
-      });
-    } else {
-      res.json({
-        result: "1",
-        response: 200,
-        data: results,
-      });
-    }
-  });
-});
-
-app.get("/api/kota", (req, res) => {
-  res.json({
-    result: "1",
-    response: 200,
-    data: [{ locality: "Ngawi", label: "Jl Trunojoyo Ngawi" }],
-  });
-});
-
-//route for insert data
-app.post("/save", (req, res) => {
-  let data = { nim: req.body.nim, nama: req.body.nama };
-  let sql = "INSERT INTO tb_mhs SET ?";
-  let query = conn.query(sql, data, (err, results) => {
-    if (err) throw err;
-    res.redirect("/");
-  });
-});
-
-app.post("/create", (req, res) => {
-  conn.query(
-    "INSERT INTO tb_mhs SET ?",
-    { nim: req.body.nim, nama: req.body.nama },
-    (error, results) => {
-      res.redirect("/");
-    }
-  );
-});
-
-//route for update data
-app.post("/update", (req, res) => {
-  let sql =
-    "UPDATE product SET product_name='" +
-    req.body.product_name +
-    "', product_price='" +
-    req.body.product_price +
-    "' WHERE product_id=" +
-    req.body.id;
-  let query = conn.query(sql, (err, results) => {
-    if (err) throw err;
-    res.redirect("/");
-  });
-});
-
-//route for delete data
-app.post("/delete", (req, res) => {
-  let sql = "DELETE FROM product WHERE product_id=" + req.body.product_id + "";
-  let query = conn.query(sql, (err, results) => {
-    if (err) throw err;
-    res.redirect("/");
-  });
-});
-
-app.post("/up", (req, res) => {
-  let sql =
-    "UPDATE mahasiswa SET nim='" +
-    req.body.itemNim +
-    "', nama='" +
-    req.body.itemName +
-    "' WHERE id_mahasiswa=" +
-    req.body.itemId;
-  conn.query(sql, (err, results) => {
-    if (err) throw err;
-    res.redirect("/");
-  });
-});
-
 //server listening
-app.listen(9000, () => {
-  console.log("Server is running at port 8000");
+app.listen(port, function() {
+  console.log('Our app is running on http://localhost:' + port);
 });
