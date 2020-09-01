@@ -5,8 +5,8 @@ const bodyParser = require("body-parser");
 const mysql = require("mysql");
 const app = express();
 const crypto = require("crypto");
-var cors = require("cors");
-var port = process.env.PORT || 9000;
+const cors = require("cors");
+const port = process.env.PORT || 9000;
 
 const conn = mysql.createConnection({
   host: "83.136.216.67",
@@ -15,20 +15,21 @@ const conn = mysql.createConnection({
   database: "u6083019_ci_market_place",
 });
 
+/* const conn = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "ci_market_client1",
+}); */
+
 conn.connect((err) => {
   if (err) throw err;
   console.log("Mysql Connected...");
 });
 
-//set views file
-app.set("views", path.join(__dirname, "views"));
 app.use(cors());
-//set view engine
-app.set("view engine", "jade");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-//set folder public as static folder for static file
-app.use("/assets", express.static(__dirname + "/public"));
 
 function hashpw(password) {
   let pw = crypto.createHash("md5").update(password).digest("hex");
@@ -42,9 +43,6 @@ function hashresult(results) {
 app.post("/login", (req, res) => {
   let username = req.body.username;
   let password = req.body.password;
-  //let pw = crypto.createHash('md5').update(password).digest('hex');
-  //let pass = crypto.createHash('sha512').update(pw).digest('hex');
-  //console.log(pass);
   let sql =
     "SELECT * FROM tb_user WHERE username='" +
     username +
@@ -52,8 +50,6 @@ app.post("/login", (req, res) => {
     hashpw(password) +
     "'";
   let query = conn.query(sql, (err, results) => {
-    //res.redirect("/");
-    const hasil = hashresult(results.toString());
     res.json({ result: "1", data: results });
   });
 });
@@ -108,13 +104,10 @@ app.get("/homepage/:username", (req, res) => {
     username +
     "'";
   let query = conn.query(sql, (err, results) => {
-    //res.redirect("/");
-    //const hasil = hashresult(results.toString());
     res.json({ result: "1", data: results });
   });
 });
 
-//server listening
 app.listen(port, function() {
   console.log('Our app is running on http://localhost:' + port);
 });
