@@ -50,7 +50,8 @@ app.post("/login", (req, res) => {
     hashpw(password) +
     "'";
   conn.query(sql, (err, results) => {
-    res.json({ result: "1", data: results });
+    //console.log(results.length)
+    results.length === '1' ? res.json({ result: 1, data: results }) : res.json({ result: 0, error: "username/password salah" })
   });
 });
 
